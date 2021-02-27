@@ -11,7 +11,9 @@ def GenerateSet(amount, normalTuple, isMissingData = False, abnormalTuple = None
         avaliableStates.append(2)
     if (exerciseTuple):
         avaliableStates.append(3)
-    minAmountPerState = amount/len(avaliableStates)/2
+    minAmountPerState = 0
+    if (len(avaliableStates) >= 1):
+        minAmountPerState = amount/len(avaliableStates)/2
     rand = 1
     currentState = 1
     stateCount = 0
@@ -40,5 +42,3 @@ def GenerateSet(amount, normalTuple, isMissingData = False, abnormalTuple = None
             stateCount = 0
             rand = 1
     return data
-if __name__ == "__main__":
-    print(GenerateSet(61,(15,18),True,(20,24), (25,30)))

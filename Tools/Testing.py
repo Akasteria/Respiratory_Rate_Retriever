@@ -16,14 +16,6 @@ class Window(QWidget):
         # this is the Canvas Widget that displays the `figure`
         # it takes the `figure` instance as a parameter to __init__
         self.canvas = FigureCanvas(self.figure)
-
-        # this is the Navigation widget
-        # it takes the Canvas widget and a parent
-
-        # Just some button connected to `plot` method
-        self.button = QPushButton('Plot')
-        self.button.clicked.connect(self.plot)
-
         # set the layout
         layout = QVBoxLayout()
         layout.addWidget(self.canvas)
