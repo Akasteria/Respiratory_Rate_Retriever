@@ -2,7 +2,8 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from matplotlib import pyplot
-from matplotlib.transforms import *
+from matplotlib.colors import ListedColormap
+import numpy
 import matplotlib
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
@@ -22,19 +23,30 @@ class LineChart(FigureCanvasQTAgg):
         ax.set_xlabel(xLabel)
         ax.set_ylabel(yLabel)
         ax.set_title(title)
-        ax.plot(range((xMin), 1), data[0])
+
+        # Plot line chart
+        ax.plot(range(xMin, 1), data[0])
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_color('gray')
         ax.spines['left'].set_bounds((0, yMax))
         ax.spines['bottom'].set_bounds((xMin, 0))
         ax.set_xlim(left = xMin, right=0)
         ax.set_ylim(bottom = 0, top = yMax)
-        ax.grid(True, 'major', clip_on = True, ls='solid', lw=0.5, color='gray')
+        
+        # Plot color blocks
+        cMapName = 'RRR cmap'
+        colors = [(0,0,0),(0.1,0.3,0.4),(0.1,0.4,0.3),(0.4,0.4,0.1)] # The 4 colors 0 = missing data (Black), 1 = normal (Light blue), 2 = abnormal (Light Yellow), 3 = exercising (Green)
+        colorMap = ListedColormap(colors, name = cMapName)
+        print(len(colors))
+        y = [0, yMax/2, yMax]
+        x = numpy.arange(xMin,1,1)
+        ax.pcolormesh(x, y, [data[1],data[1]],alpha = 1, shading='auto', cmap = colorMap)
+
+        # Draw grid and update
+        ax.get_yaxis().grid(True, 'major', clip_on = True, ls='solid', lw=0.5, color='gray')
+        #ax.get_xaxis().grid(True, 'both', clip_on = True, ls='solid', lw=0.5, color='gray', alpha=0.5)
+        
         self.draw()
-        # TODO plot color blocks
-    
-
-
 
     def Add(self, unitData):
         self.Enqueue(unitData)
@@ -46,3 +58,6 @@ class LineChart(FigureCanvasQTAgg):
     def Dequeue(self):
         self.totalTime = self.totalTime - self.chartData[0][0]
         self.chartData.pop(0)
+class ValuePanel(QWidget):
+    def __init__(self, text, value):
+        QWidget.__init__()
