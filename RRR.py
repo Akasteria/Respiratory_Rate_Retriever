@@ -3,7 +3,6 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from Tools import Pseudodata
-from Widgets import MyWidgets
 from Widgets import CompositeWidgets
 def main():
     # TODO take inputs from bluetooth

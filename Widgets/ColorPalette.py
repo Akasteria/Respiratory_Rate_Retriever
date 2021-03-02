@@ -5,8 +5,22 @@ from matplotlib.colors import ListedColormap
 class UIColor(Enum):
     EMPTY = (0,0,0) # black
     NORMAL = (0.1,0.3,0.4) # blue
-    OKAY = (0.4,0.4,0.1) # Green
-    WARNING = (0.1,0.4,0.3) # Yellow
+    WARNING = (0.4,0.4,0.1) # Yellow
+    OKAY = (0.1,0.4,0.3) # Green
+    ERROR = (0.4,0.2,0.2) # Red
+class ColorDescription(Enum):
+    EMPTY = 'No Data'
+    NORMAL = 'Normal'
+    WARNING = 'Elevated'
+    OKAY = 'Normal+Exercising'
+    ERROR = 'Elevated+Exercising'
+def ColorToDescription(color):
+    for enum in UIColor:
+        if (enum.value == color):
+            return ColorDescription[enum.name].value
+    raise ValueError('No matching UI color')
+def EnumToDescription(enum):
+    return ColorDescription[enum.name].value
 def ColorMap():
     cMapName = 'RRR cmap' # The 4 colors 0 = missing data (Black), 1 = normal (Light blue), 2 = abnormal (Light Yellow), 3 = exercising (Green)
     colorMap = ListedColormap(UIColors(), name = cMapName)
@@ -33,3 +47,5 @@ def StyledText(text,color,size,font):
     strColor = str(newColor)
     string = '<p style="color:rgb' + strColor + ';font-family:'+ font + ';font-size:' + str(size) + 'px;">'+ text + '</p>'
     return string
+if __name__ == '__main__':
+    pass

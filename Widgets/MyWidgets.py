@@ -2,88 +2,37 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from matplotlib import pyplot
-from matplotlib.colors import ListedColormap
+from matplotlib.patches import Patch
 import numpy
 import matplotlib
 from .ColorPalette import *
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 
-
-class LineChart(FigureCanvasQTAgg):
-    def __init__(self, parent=None):
-        pyplot.style.use(['dark_background'])
-        # matplotlib.use('Qt5Agg')
-        self.fig = Figure()
-        FigureCanvasQTAgg.__init__(self, self.fig)
-        # self.figureCanvas.updateGeometry()
-        # self.figureCanvas.draw()
-
-    def Plot(self, data, title, xLabel, yLabel):
-        xMin = 1-len(data[0])
-        yMax = int(max(data[0]))+1
-        ax = self.fig.add_subplot(111)
-        ax.clear()
-        ax.set_xlabel(xLabel)
-        ax.set_ylabel(yLabel)
-        ax.set_title(title)
-
-        # Plot line chart
-        ax.plot(range(xMin, 1), data[0])
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_color('gray')
-        ax.spines['left'].set_bounds((0, yMax))
-        ax.spines['bottom'].set_bounds((xMin, 0))
-        ax.set_xlim(left=xMin, right=0)
-        ax.set_ylim(bottom=0, top=yMax)
-
-        # Plot color blocks
-        normal, colorMap = ColorMap()
-        y = [0, yMax/2, yMax]
-        x = numpy.arange(xMin, 1, 1)
-        ax.pcolormesh(x, y, [data[1], data[1]], alpha=1,
-                      shading='auto', cmap=colorMap, norm=normal)
-
-        # Draw grid and update
-        ax.get_yaxis().grid(True, 'major', clip_on=True, ls='solid', lw=0.5, color='gray')
-        #ax.get_xaxis().grid(True, 'both', clip_on = True, ls='solid', lw=0.5, color='gray', alpha=0.5)
-
-        self.draw()
-
-    def Add(self, unitData):
-        self.Enqueue(unitData)
-        while (self.totalTime > self.span):
-            self.Dequeue()
-
-    def Enqueue(self, unitData):
-        self.totalTime = self.totalTime + unitData[0]
-        self.chartData.append(unitData)
-
-    def Dequeue(self):
-        self.totalTime = self.totalTime - self.chartData[0][0]
-        self.chartData.pop(0)
-
-
 class BarChart(FigureCanvasQTAgg):
     def __init__(self, parent=None):
         pyplot.style.use(['dark_background'])
-        # matplotlib.use('Qt5Agg')
+        matplotlib.use('Qt5Agg')
         self.fig = Figure()
         FigureCanvasQTAgg.__init__(self, self.fig)
-        # self.figureCanvas.updateGeometry()
-        # self.figureCanvas.draw()
 
     def Plot(self, data, title, xLabel, yLabel):
+        self.xLabel = xLabel
+        self.yLabel = yLabel
+        self.title = title
+        self.UpdatePlot(data)
+
+    def UpdatePlot(self, data):
         xMin = 1-len(data[0])
-        yMax = int(max(data[0]))+1
+        yMax = int(max(data[0]) * 1.2)
         ax = self.fig.add_subplot(111)
         ax.clear()
-        ax.set_xlabel(xLabel)
-        ax.set_ylabel(yLabel)
-        ax.set_title(title)
+        ax.set_xlabel(self.xLabel)
+        ax.set_ylabel(self.yLabel)
+        ax.set_title(self.title)
 
         # Plot bar chart
-        ax.plot(range(xMin, 1), data[0])
+        #ax.plot(range(xMin, 1), data[0])
         bars = ax.bar(range(xMin, 1), data[0],
                       width=1, align='edge', linewidth=0)
         ax.spines['top'].set_visible(False)
@@ -93,18 +42,21 @@ class BarChart(FigureCanvasQTAgg):
         ax.set_xlim(left=xMin, right=0)
         ax.set_ylim(bottom=0, top=yMax)
 
-        # Plot color block
+        # Color bars
         myInt = 0
         for patch in bars.patches:
             patch.set_facecolor(UIColors(data[1][myInt]))
             myInt = myInt + 1
-
+        # Setup legend
+        legendElements = []
+        for i in range(len(UIColor)):
+            if (i in data[1]):
+                legendElements.append(Patch(facecolor = UIColors(i), linewidth = 0, label = ColorToDescription(UIColors(i))))
+        ax.legend(handles=legendElements)
         # Draw grid and update
         ax.get_yaxis().grid(True, 'major', clip_on=True, ls='solid', lw=0.5, color='gray')
-        #ax.get_xaxis().grid(True, 'both', clip_on = True, ls='solid', lw=0.5, color='gray', alpha=0.5)
 
         self.draw()
-
 
 class ValuePanel(QWidget):
     def __init__(self, text, value, status):
