@@ -13,17 +13,21 @@ def ColorMap():
     bounds = numpy.arange(len(UIColors())+1)
     normal = matplotlib.colors.BoundaryNorm(bounds, colorMap.N)
     return normal, colorMap
-def UIColors():
+def UIColors(i = -1):
     ls = []
     for uiColor in UIColor:
         ls.append(uiColor.value)
-    return ls
-def BrightUIColors():
+    if (i == -1):
+        return ls
+    return ls[i]
+def BrightUIColors(i = -1):
     ls = []
     for uiColor in UIColor:
         newColor = (uiColor.value[0] * 2, uiColor.value[1] * 2,uiColor.value[2] * 2)
         ls.append(newColor)
-    return ls
+    if (i == -1):
+        return ls
+    return ls[i]
 def StyledText(text,color,size,font):
     newColor = (color[0] * 255,color[1] * 255,color[2] * 255)
     strColor = str(newColor)

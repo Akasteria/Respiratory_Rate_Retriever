@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import *
 class ChartValuePair(QGroupBox):
     def __init__(self, data, title, xLabel, text):
         QGroupBox.__init__(self)
-        chart = LineChart()
+        chart = BarChart()
         chart.Plot(data, title, xLabel, 'Respiratory Rate')
         value = ValuePanel(text, data[0][-1], data[1][-1])
         layout = QHBoxLayout()

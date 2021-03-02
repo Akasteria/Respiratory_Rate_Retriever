@@ -1,6 +1,6 @@
 import random
 
-def GenerateSet(amount, normalTuple, isMissingData = False, abnormalTuple = None, exerciseTuple = None):
+def GenerateSet(amount, minAmountPerState, randMult, normalTuple, isMissingData = False, abnormalTuple = None, exerciseTuple = None):
     # each unit data is a 2D array [[d1,d2,d3],[y1,y2,y3]]
     # Status code 0 = missing data, 1 = normal, 2 = abnormal, 3 = exercising
     data = [[],[]]
@@ -11,9 +11,6 @@ def GenerateSet(amount, normalTuple, isMissingData = False, abnormalTuple = None
         avaliableStates.append(2)
     if (exerciseTuple):
         avaliableStates.append(3)
-    minAmountPerState = 0
-    if (len(avaliableStates) >= 1):
-        minAmountPerState = amount/len(avaliableStates)/2
     rand = 1
     currentState = 1
     stateCount = 0
@@ -30,7 +27,7 @@ def GenerateSet(amount, normalTuple, isMissingData = False, abnormalTuple = None
         # Determine next state
         data[0].append(magnitude)
         data[1].append(currentState)
-        rand = rand * (random.random())
+        rand = rand * randMult
         stateCount = stateCount + 1
         if ((rand < random.random() and stateCount >= minAmountPerState) or len(avaliableStates) * minAmountPerState == amount - len(data[0])): # Change State
             if (len(avaliableStates) == 0):
