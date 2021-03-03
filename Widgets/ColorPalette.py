@@ -3,7 +3,7 @@ import numpy
 import matplotlib
 from matplotlib.colors import ListedColormap
 class UIColor(Enum):
-    EMPTY = (0,0,0) # black
+    EMPTY = (0.1,0.1,0.1) # black
     NORMAL = (0.1,0.3,0.4) # blue
     WARNING = (0.4,0.4,0.1) # Yellow
     OKAY = (0.1,0.4,0.3) # Green
@@ -42,6 +42,11 @@ def BrightUIColors(i = -1):
     if (i == -1):
         return ls
     return ls[i]
+def Descriptions():
+    des = []
+    for description in ColorDescription:
+        des.append(description.value)
+    return des
 def StyledText(text,color,size,font):
     newColor = (color[0] * 255,color[1] * 255,color[2] * 255)
     strColor = str(newColor)

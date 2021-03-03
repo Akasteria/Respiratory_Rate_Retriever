@@ -7,7 +7,9 @@ class ChartValuePair(QGroupBox):
         QGroupBox.__init__(self)
         chart = BarChart()
         chart.Plot(data, title, xLabel, 'Respiratory Rate')
-        value = ValuePanel(text, data[0][-1], data[1][-1])
+        #value = ValuePanel(text, data[0][-1], data[1][-1])
+        value = PieChart()
+        value.Plot(data)
         layout = QHBoxLayout()
         layout.addWidget(chart)
         layout.addWidget(value)
@@ -24,3 +26,5 @@ class ChartValuePairList(QWidget):
         vb.addWidget(weeklyChart)
         self.setLayout(vb)
 
+class GridWindow(QWidget):
+    pass

@@ -1,49 +1,18 @@
-import sys
-from PyQt5.QtWidgets import *
-
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
-
-import random
-
-class Window(QWidget):
-    def __init__(self, parent=None):
-        super(Window, self).__init__(parent)
-
-        # a figure instance to plot on
-        self.figure = Figure()
-
-        # this is the Canvas Widget that displays the `figure`
-        # it takes the `figure` instance as a parameter to __init__
-        self.canvas = FigureCanvas(self.figure)
-        # set the layout
-        layout = QVBoxLayout()
-        layout.addWidget(self.canvas)
-        layout.addWidget(self.button)
-        self.setLayout(layout)
-
-    def plot(self):
-        ''' plot some random stuff '''
-        # random data
-        data = [random.random() for i in range(10)]
-
-        # create an axis
-        ax = self.figure.add_subplot(111)
-
-        # discards the old graph
-        ax.clear()
-
-        # plot data
-        ax.plot(data, '*-')
-
-        # refresh canvas
-        self.canvas.draw()
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-
-    main = Window()
-    main.plot()
-    main.show()
-
-    sys.exit(app.exec_())
+import matplotlib.pyplot as plt
+# Need to create as global variable so our callback(on_plot_hover) can access
+fig = plt.figure()
+plot = fig.add_subplot(111)
+# create some curves
+for i in range(4):
+    # Giving unique ids to each data member
+    plot.plot(
+        [i*1,i*2,i*3,i*4],
+        gid=i)
+def on_plot_hover(event):
+    # Iterating over each data member plotted
+    for curve in plot.get_lines():
+        # Searching which data member corresponds to current mouse position
+        if curve.contains(event)[0]:
+            print ("over %s" % curve.get_gid())
+fig.canvas.mpl_connect('motion_notify_event', on_plot_hover)           
+plt.show()
