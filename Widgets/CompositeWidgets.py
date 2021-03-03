@@ -8,11 +8,8 @@ class ChartValuePair(QGroupBox):
         chart = BarChart()
         chart.Plot(data, title, xLabel, 'Respiratory Rate')
         #value = ValuePanel(text, data[0][-1], data[1][-1])
-        value = PieChart()
-        value.Plot(data)
         layout = QHBoxLayout()
         layout.addWidget(chart)
-        layout.addWidget(value)
         self.setLayout(layout)
 class ChartValuePairList(QWidget):
     def __init__(self, hourlyData, dailyData, weeklyData):
