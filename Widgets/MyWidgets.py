@@ -170,6 +170,8 @@ class BarThumbnail(FigureCanvasQTAgg):
         self.draw()
     def PlotPie(self, data):
         max = 50
+        print(self.axes[0][0].patch.get_extents())
+        print(transforms.Bbox([[0.2,0.4],[0.8,0.6]]))
         self.axes[0][0].set_title("Current")
         annot = self.axes[0][0].annotate('{:.2f}/min'.format(data[0][-1]), xy=(0,0), xycoords=("data"))
         self.axes[0][0].pie([data[0][-1]/max, 1-data[0][-1]/max], colors = [UIColors(data[1][-1]), UIColor.EMPTY.value], radius = 1.2, wedgeprops=dict(width=0.2, edgecolor='w'), startangle = 90)

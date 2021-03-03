@@ -24,5 +24,4 @@ class ChartValuePairList(QTabWidget):
         self.addTab(dailyChart, "Daily Log")
         self.addTab(weeklyChart, "Weekly Log")
         self.setTabPosition(QTabWidget.West)
-class GridWindow(QWidget):
-    pass
+        self.setWindowTitle("RRR")
