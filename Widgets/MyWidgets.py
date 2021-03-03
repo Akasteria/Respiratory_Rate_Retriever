@@ -5,9 +5,11 @@ from matplotlib import pyplot
 from matplotlib.patches import Patch
 import numpy
 import matplotlib
+from matplotlib import transforms
 from .ColorPalette import *
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+
 
 class BarChart(FigureCanvasQTAgg):
     def __init__(self, parent=None):
@@ -18,15 +20,17 @@ class BarChart(FigureCanvasQTAgg):
         self.currentPatch = None
         self.fig.canvas.mpl_connect('motion_notify_event', self.OnMouseMove)
         self.fig.canvas.mpl_connect('axes_leave_event', self.OnLeaveAxis)
+
     def Plot(self, data, title, xLabel, yLabel):
         self.xLabel = xLabel
         self.yLabel = yLabel
         self.title = title
         self.data = data
         self.UpdatePlot(data)
+
     def UpdatePlot(self, data):
         xMin = -len(data[0])
-        yMax = int(max(data[0]) * 1.3) #leave space for legend
+        yMax = int(max(data[0]) * 1.3)  # leave space for legend
         ax = self.fig.add_subplot(111)
         ax.clear()
         ax.set_xlabel(self.xLabel)
@@ -53,38 +57,50 @@ class BarChart(FigureCanvasQTAgg):
         legendElements = []
         for i in range(len(UIColor)):
             if (i in data[1]):
-                legendElements.append(Patch(facecolor = UIColors(i), linewidth = 1, edgecolor=(None), label = ColorToDescription(UIColors(i))))
-        ax.legend(handles=legendElements,loc = 'upper right')
+                legendElements.append(Patch(facecolor=UIColors(i), linewidth=1, edgecolor=(
+                    None), label=ColorToDescription(UIColors(i))))
+        ax.legend(handles=legendElements, loc='upper right')
+        # Draw annotation
+        self.annot = ax.annotate(text="", xy=(0, 0), xytext=(10, 10), xycoords="data", textcoords='offset pixels',
+                                 annotation_clip=False, bbox=dict(boxstyle='square', ec=(0.8, 0.8, 0.8), fc=UIColor.EMPTY.value, lw=1), visible=False)
         # Draw grid and update
         ax.get_yaxis().grid(True, 'major', clip_on=True, ls='solid', lw=0.5, color='gray')
         self.draw()
 
     def OnMouseMove(self, event):
-        print(event.xdata)
         if (event.xdata != None and event.ydata > 0 and event.ydata <= self.data[0][len(self.patches) + int(event.xdata) - 1]):
-            newPatch = self.patches[len(self.patches) + int(event.xdata+0.01) - 1]
+            newPatch = self.patches[len(
+                self.patches) + int(event.xdata+0.01) - 1]
+            # annotation
+            self.annot.xy = (event.xdata, event.ydata)
             if (newPatch != self.currentPatch):
                 if (self.currentPatch != None):
                     self.currentPatch.set_edgecolor(None)
                     self.currentPatch.set_zorder(1)
                 if (newPatch != None):
-                    newPatch.set_edgecolor((1,1,1))
+                    self.annot.set_visible(True)
+                    self.annot.set_text('Time: {:d}\nRespiratory Rate: {:.1f}'.format(int(
+                        event.xdata+0.01), self.data[0][len(self.patches) + int(event.xdata+0.01) - 1]))
+                    newPatch.set_edgecolor((1, 1, 1))
                     newPatch.set_zorder(2)
-                    #print(newPatch.zorder)
+                    # print(newPatch.zorder)
                 self.currentPatch = newPatch
-                self.draw()
         else:
+            self.annot.set_visible(False)
             if (self.currentPatch != None):
                 self.currentPatch.set_edgecolor(None)
                 self.currentPatch.set_zorder(1)
                 self.currentPatch = None
-                self.draw()   
-    def OnLeaveAxis(self,event):
+        self.draw()
+
+    def OnLeaveAxis(self, event):
+        self.annot.set_visible(False)
         if (self.currentPatch != None):
             self.currentPatch.set_edgecolor(None)
             self.currentPatch.set_zorder(1)
             self.currentPatch = None
-            self.draw()   
+            self.draw()
+
 
 class PieChart(FigureCanvasQTAgg):
     def __init__(self, parent=None):
@@ -92,6 +108,7 @@ class PieChart(FigureCanvasQTAgg):
         matplotlib.use('Qt5Agg')
         self.fig = Figure()
         FigureCanvasQTAgg.__init__(self, self.fig)
+
     @staticmethod
     def ConvertToFrequency(data):
         i = 0
@@ -101,13 +118,15 @@ class PieChart(FigureCanvasQTAgg):
             pieData.append(numpy.count_nonzero(npData == i))
             i = i + 1
         return pieData
+
     @staticmethod
     def AddPercentages(strings, pieData):
         total = sum(pieData)
         labels = []
         for i in range(len(pieData)):
             if pieData[i] > 0:
-                labels.append('{:d} ({:.1f}%)\n{}'.format(pieData[i],pieData[i]/total*100,strings[i]))
+                labels.append('{:d} ({:.1f}%)\n{}'.format(
+                    pieData[i], pieData[i]/total*100, strings[i]))
                 continue
             labels.append('')
         return labels
@@ -116,14 +135,17 @@ class PieChart(FigureCanvasQTAgg):
         pieData = self.ConvertToFrequency(data)
         ax = self.fig.add_subplot(111)
         ax.clear()
-        ax.pie(pieData, labels = self.AddPercentages(Descriptions(), pieData), colors = UIColors())
-        
+        ax.pie(pieData, labels=self.AddPercentages(
+            Descriptions(), pieData), colors=UIColors())
+
         legendElements = []
         for i in range(len(UIColor)):
             if (i in data[1]):
-                legendElements.append(Patch(facecolor = UIColors(i), linewidth = 0, label = ColorToDescription(UIColors(i))))
+                legendElements.append(Patch(facecolor=UIColors(
+                    i), linewidth=0, label=ColorToDescription(UIColors(i))))
         self.draw()
-    
+
+
 class ValuePanel(QWidget):
     def __init__(self, text, value, status):
         QWidget.__init__(self)
