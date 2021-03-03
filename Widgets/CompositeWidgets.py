@@ -11,17 +11,18 @@ class ChartValuePair(QGroupBox):
         layout = QHBoxLayout()
         layout.addWidget(chart)
         self.setLayout(layout)
-class ChartValuePairList(QWidget):
+class ChartValuePairList(QTabWidget):
     def __init__(self, hourlyData, dailyData, weeklyData):
-        QWidget.__init__(self)
+        QTabWidget.__init__(self)
+        dashBoard = BarThumbnail()
+        dashBoard.Plot(hourlyData, dailyData, weeklyData)
         hourlyChart = ChartValuePair(hourlyData, 'Hourly Trend', 'Time (mins)', 'Current:')
         dailyChart = ChartValuePair(dailyData, 'Daily Trend', 'Time (hours)', 'Hourly Average:')
         weeklyChart = ChartValuePair(weeklyData, 'Weekly Trend', 'Time (Days)', 'Daily Average:')
-        vb = QVBoxLayout()
-        vb.addWidget(hourlyChart)
-        vb.addWidget(dailyChart)
-        vb.addWidget(weeklyChart)
-        self.setLayout(vb)
-
+        self.addTab(dashBoard, "Dash Board")
+        self.addTab(hourlyChart, "Hourly Log")
+        self.addTab(dailyChart, "Daily Log")
+        self.addTab(weeklyChart, "Weekly Log")
+        self.setTabPosition(QTabWidget.West)
 class GridWindow(QWidget):
     pass

@@ -9,8 +9,6 @@ from matplotlib import transforms
 from .ColorPalette import *
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-
-
 class BarChart(FigureCanvasQTAgg):
     def __init__(self, parent=None):
         pyplot.style.use(['dark_background'])
@@ -19,9 +17,10 @@ class BarChart(FigureCanvasQTAgg):
         FigureCanvasQTAgg.__init__(self, self.fig)
         self.currentPatch = None
         self.axB, self.axP = self.fig.subplots(ncols=2, nrows=1)
+        self.axB.set_zorder(10)
         self.fig.canvas.mpl_connect('motion_notify_event', self.OnMouseMove)
         self.fig.canvas.mpl_connect('axes_leave_event', self.OnLeaveAxis)
-
+        self.setMinimumWidth(self.height()*2) 
     @staticmethod
     def ConvertToFrequency(data):
         i = 0
@@ -52,8 +51,8 @@ class BarChart(FigureCanvasQTAgg):
         self.UpdatePlot(data)
 
     def UpdatePlot(self, data):
-        self.UpdateBar(data)
         self.UpdatePie(data)
+        self.UpdateBar(data)
         self.DrawAnnotation()
         self.draw()
     def UpdateBar(self,data):
@@ -113,10 +112,17 @@ class BarChart(FigureCanvasQTAgg):
             artist.set_edgecolor(None)
             artist.set_zorder(1)
             artist = None
+    def BarFocus(self, event):
+        if (event.xdata == None):
+            return None
+        newPatch = None
+        xIndex = len(self.patches) + int(event.xdata+0.01) - 1
+        if (event.xdata != None and event.ydata > 0 and len(self.data[0]) > xIndex and event.ydata <= self.data[0][xIndex]):
+            newPatch = self.patches[xIndex]
+        return newPatch
     def OnMouseMove(self, event):
-        if (event.xdata != None and event.ydata > 0 and event.ydata <= self.data[0][len(self.patches) + int(event.xdata) - 1]):
-            newPatch = self.patches[len(
-                self.patches) + int(event.xdata+0.01) - 1]
+        newPatch = self.BarFocus(event)
+        if (newPatch != None):
             # annotation
             self.annot.xy = (event.xdata, event.ydata)
             if (newPatch != self.currentPatch):
@@ -134,7 +140,54 @@ class BarChart(FigureCanvasQTAgg):
     def OnLeaveAxis(self, event):
         self.Defocus(self.currentPatch)
 
+class BarThumbnail(FigureCanvasQTAgg):
+    def __init__(self):
+        pyplot.style.use(['dark_background'])
+        matplotlib.use('Qt5Agg')
+        self.fig = Figure()
+        FigureCanvasQTAgg.__init__(self, self.fig)
+        self.axes = self.fig.subplots(ncols=2, nrows=2)
+        self.fig.canvas.mpl_connect('axes_enter_event',self.OnEnterAxis)
+        self.fig.canvas.mpl_connect('axes_leave_event',self.OnLeaveAxis)
+        self.axes[0][0].spines['bottom'].set_visible(False)
+        self.axes[0][0].spines['left'].set_visible(False)
+        ax = [self.axes[0][0],self.axes[0][1], self.axes[1][0], self.axes[1][1]]
+        for axis in ax:
+            axis.patch.set_linewidth(2)
+            axis.patch.set_edgecolor(None)
+            axis.autoscale(enable=True, tight=True)
+            axis.set_xticks([])
+            axis.set_yticks([])
+            axis.spines['top'].set_visible(False)
+            axis.spines['right'].set_visible(False)
+        self.axes[0][0].patch.set_linewidth(0)
 
+    def Plot(self, hour, day, week):
+        self.PlotPie(hour)
+        self.PlotBar(hour, self.axes[0][1], "Past Hour")
+        self.PlotBar(day, self.axes[1][0], "Past Day")
+        self.PlotBar(week, self.axes[1][1], "Past Week")
+        self.draw()
+    def PlotPie(self, data):
+        max = 50
+        self.axes[0][0].set_title("Current")
+        annot = self.axes[0][0].annotate('{:.2f}/min'.format(data[0][-1]), xy=(0,0), xycoords=("data"))
+        self.axes[0][0].pie([data[0][-1]/max, 1-data[0][-1]/max], colors = [UIColors(data[1][-1]), UIColor.EMPTY.value], radius = 1.2, wedgeprops=dict(width=0.2, edgecolor='w'), startangle = 90)
+    def PlotBar(self, data, axis, title):
+        axis.set_title(title)
+        xMin = -len(data[0])
+        bars = axis.bar(range(xMin, 0), data[0],
+                      width=1, align='edge', linewidth=2)
+        myInt = 0
+        for patch in bars.patches:
+            patch.set_facecolor(UIColors(data[1][myInt]))
+            myInt = myInt + 1
+    def OnEnterAxis(self, event):
+        event.inaxes.patch.set_edgecolor((1,1,1))
+        event.canvas.draw()
+    def OnLeaveAxis(self, event):
+        event.inaxes.patch.set_edgecolor(None)
+        event.canvas.draw()
 class ValuePanel(QWidget):
     def __init__(self, text, value, status):
         QWidget.__init__(self)

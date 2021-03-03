@@ -1,40 +1,19 @@
-import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Cursor
-#x and y arrays for definining an initial function
-x = np.linspace(0, 10, 100)
-y = np.exp(x**0.5) * np.sin(5*x)
-# Plotting
-fig = plt.figure()
-ax = fig.subplots()
-ax.plot(x,y, color = 'b')
-ax.grid()
-# Defining the cursor
-cursor = Cursor(ax, horizOn=True, vertOn=True, useblit=True,
-                color = 'r', linewidth = 1)
-# Creating an annotating box
-annot = ax.annotate("", xy=(0,0), xytext=(-40,40),textcoords="offset points",
-                    bbox=dict(boxstyle='round4', fc='linen',ec='k',lw=1),
-                    arrowprops=dict(arrowstyle='-|>'))
-annot.set_visible(False)
-# Function for storing and showing the clicked values
-coord = []
-def onclick(event):
-    global coord
-    coord.append((event.xdata, event.ydata))
-    x = event.xdata
-    y = event.ydata
-    
-    # printing the values of the selected point
-    print([x,y]) 
-    annot.xy = (x,y)
-    text = "({:.2g}, {:.2g})".format(x,y)
-    annot.set_text(text)
-    annot.set_visible(True)
-    fig.canvas.draw() #redraw the figure
-    
-fig.canvas.mpl_connect('button_press_event', onclick)
+import numpy as np
+fig, ax = plt.subplots()
+
+size = 0.3
+vals = np.array([[60., 32.], [37., 40.], [29., 10.]])
+
+cmap = plt.get_cmap("tab20c")
+outer_colors = cmap(np.arange(3)*4)
+inner_colors = cmap([1, 2, 5, 6, 9, 10])
+
+ax.pie(vals.sum(axis=1), radius=1, colors=outer_colors,
+       wedgeprops=dict(width=size, edgecolor='w'))
+
+ax.pie(vals.flatten(), radius=1-size, colors=inner_colors,
+       wedgeprops=dict(width=size, edgecolor='w'))
+
+ax.set(aspect="equal", title='Pie plot with `ax.pie`')
 plt.show()
-# Unzipping the coord list in two different arrays
-x1, y1 = zip(*coord)
-print(x1, y1)
