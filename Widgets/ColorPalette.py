@@ -54,3 +54,4 @@ def StyledText(text,color,size,font):
     return string
 if __name__ == '__main__':
     pass
+    style="color:rgb(51, 153,204)"
