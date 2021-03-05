@@ -186,6 +186,8 @@ class BarThumbnail(FigureCanvasQTAgg):
             axis.set_yticks([])
             axis.spines['top'].set_visible(False)
             axis.spines['right'].set_visible(False)
+            axis.spines['left'].set_visible(False)
+            axis.spines['bottom'].set_visible(False)
         self.axes[0].patch.set_linewidth(0)
         self.axes[1].patch.set_linewidth(0)
     def UpdateAnimation(self,i):# TODO dock with data interface
