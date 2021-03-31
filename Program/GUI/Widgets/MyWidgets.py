@@ -6,17 +6,18 @@ from matplotlib.patches import Patch
 import numpy
 import matplotlib
 from matplotlib import transforms
-from .ColorPalette import *
+from ...Tools.ColorPalette import *
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.gridspec import GridSpec
 import matplotlib.animation as animation
-
+import os
+import sys
 
 class InfoPage(QLabel):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
-        with open("InfoPage.html") as page:
+        with open(os.path.join(sys.path[0],"InfoPage.html")) as page:
             text = page.read()
             self.setText(text)
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
