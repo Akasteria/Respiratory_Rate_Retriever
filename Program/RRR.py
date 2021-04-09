@@ -5,3 +5,4 @@ from PyQt5.QtWidgets import *
 from .GUI import RRRWindow
 def ShowGUI(styleSheet):
     window = RRRWindow.RRRWindow(styleSheet)
+    return window

@@ -7,7 +7,6 @@ class BarChartLayout(QGroupBox):
         QGroupBox.__init__(self)
         chart = BarChart()
         chart.Plot(data, title, xLabel, 'Respiratory Rate')
-        #value = ValuePanel(text, data[0][-1], data[1][-1])
         layout = QHBoxLayout()
         layout.addWidget(chart)
         self.setLayout(layout)
@@ -23,11 +22,11 @@ class ChartValuePairList(QTabWidget):
         layout.addWidget(web)
         layout.addWidget(dashBoard)
         w.setLayout(layout)
-        hourlyChart = BarChartLayout(hourlyData, 'Hourly Trend', 'Time (mins)')
+        self.hourlyChart = BarChartLayout(hourlyData, 'Hourly Trend', 'Time (mins)')
         dailyChart = BarChartLayout(dailyData, 'Daily Trend', 'Time (hours)')
         weeklyChart = BarChartLayout(weeklyData, 'Weekly Trend', 'Time (Days)')
         self.addTab(w, "Dashboard")
-        self.addTab(hourlyChart, "Hourly Log")
+        self.addTab(self.hourlyChart, "Hourly Log")
         self.addTab(dailyChart, "Daily Log")
         self.addTab(weeklyChart, "Weekly Log")
         self.setTabPosition(QTabWidget.West)
@@ -58,7 +57,7 @@ class TabBar(QTabBar):
             painter.translate(c)
             painter.rotate(90)
             painter.translate(-c)
-            painter.drawControl(QStyle.CE_TabBarTabLabel, opt);
+            painter.drawControl(QStyle.CE_TabBarTabLabel, opt)
             painter.restore()
 
 class ProxyStyle(QProxyStyle):
