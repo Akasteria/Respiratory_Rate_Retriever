@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from datetime import datetime as dt
 class SerialReceiver:
     def __init__(self):
-        self.ser = serial.Serial(port = 'COM3', baudrate = 9600, timeout = 0.1)
+        self.ser = serial.Serial(port = 'COM9', baudrate = 9600, timeout = 0.1)
         self.ser.flushInput()
         self.dataFrame = pd.DataFrame(columns = ['RRData', 'Time'])
         self.minuteCounter = 0
@@ -19,10 +19,10 @@ class SerialReceiver:
     #can we make the python dataFrame2 run and append to 15 seconds worth of data
     #and then calculate respriatory rate over that and append it to the first df?
     @staticmethod
-    def removeFromList(the_list, val):
+    def RemoveFromList(the_list, val):
         [value for value in the_list if value != val]
 
-    def get_RR(self, list_input):
+    def Get_RR(self, list_input, window = None):
         #RRlist = []
         #for item in products_list:
             #RRlist.append(item)
@@ -30,7 +30,7 @@ class SerialReceiver:
         #meanAnalogValue = dataFrame.mean()
         #print("mean analog value is... " + meanAnalogValue)
         RRlist2 = []
-        self.removeFromList(list_input, '')
+        self.RemoveFromList(list_input, '')
         for item in list_input:
             RRlist2.append(int(item))
         floatingMean = statistics.mean(RRlist2)
@@ -41,22 +41,23 @@ class SerialReceiver:
         print('Peaks indexes: %s' % (indexes))
 
         # plot the values and their peaks marked with 'x'
-        plt.plot(vector)
-        plt.plot(indexes, vector[indexes], "x")
-        plt.plot(np.zeros_like(vector), "--", color = "gray")
-        plt.show()
+        #plt.plot(vector)
+        #plt.plot(indexes, vector[indexes], "x")
+        #plt.plot(np.zeros_like(vector), "--", color = "gray")
+        #plt.show()
         
         # find values of the peaks and store them    
         peak_values = []
         for index in indexes:
             value = RRlist2[index]
             peak_values.append(value)
-        print('Actual peak values: %s' % (peak_values))
+        #print('Actual peak values: %s' % (peak_values))
         respiratoryRate = len(peak_values)
-        print('Respiratory Rate: ' + str(respiratoryRate))
-
+        #print('Respiratory Rate: ' + str(respiratoryRate))
+        if (window != None):
+            window.SetData(respiratoryRate)
         #print(RRlist2)
-    def GetSerial(self):
+    def GetSerial(self, window = None):
         while True:
             try:
                 ser_bytes = self.ser.readline()
@@ -83,9 +84,10 @@ class SerialReceiver:
                     # then get the RR from that
                     # also reset the minuteCounter variable to 0
                     RR_list = self.dataFrame["RRData"].tolist()
-                    self.get_RR(RR_list)
+                    self.Get_RR(RR_list, window)
                     self.minuteCounter = 0
-                    break
+                    
+                    
                     
                     
                 #print(decoded_bytes)
