@@ -8,10 +8,10 @@ import vector
 import matplotlib.pyplot as plt
 from datetime import datetime as dt
 class SerialReceiver(QObject):
+    finished = pyqtSignal()
+    minuteReport = pyqtSignal(int)
     def __init__(self):
         QObject.__init__(self)
-        self.finished = pyqtSignal()
-        self.minuteReport = pyqtSignal(float)
         self.ser = serial.Serial(port = 'COM4', baudrate = 9600, timeout = 0.1)
         self.ser.flushInput()
         self.dataFrame = pd.DataFrame(columns = ['RRData', 'Time'])
@@ -59,7 +59,7 @@ class SerialReceiver(QObject):
         #print('Actual peak values: %s' % (peak_values))
         respiratoryRate = len(peak_values)
         #print('Respiratory Rate: ' + str(respiratoryRate))
-        self.minuteReport.emit(float(respiratoryRate))
+        self.minuteReport.emit(respiratoryRate)
         #print(RRlist2)
         
     @pyqtSlot()
