@@ -87,9 +87,6 @@ class SerialReceiver:
                     self.Get_RR(RR_list, window)
                     self.minuteCounter = 0
                     
-                    
-                    
-                    
                 #print(decoded_bytes)
             except KeyboardInterrupt:
                 print("datalogging interrupted")
