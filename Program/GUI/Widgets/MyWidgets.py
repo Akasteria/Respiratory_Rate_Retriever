@@ -22,7 +22,7 @@ class InfoPage(QLabel):
             self.setText(text)
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.setAlignment(Qt.AlignTop)
-
+        self.thread = QThread()
 class BarChart(FigureCanvasQTAgg):
     def __init__(self, parent=None):
         pyplot.style.use(['dark_background'])
@@ -66,6 +66,7 @@ class BarChart(FigureCanvasQTAgg):
         self.UpdatePlot(data)
 
     def UpdatePlot(self, data):
+        self.data = data
         self.UpdatePie(data)
         self.UpdateBar(data)
         self.DrawAnnotation()
@@ -204,8 +205,8 @@ class BarThumbnail(FigureCanvasQTAgg):
 
     def PlotPie(self, data):
         max = 50
-        print(self.axes[0].patch.get_extents())
-        print(transforms.Bbox([[0.2, 0.4], [0.8, 0.6]]))
+        #print(self.axes[0].patch.get_extents())
+        #print(transforms.Bbox([[0.2, 0.4], [0.8, 0.6]]))
         self.axes[0].set_title("Current")
         annot = self.axes[0].annotate(
             '{:.2f}/min'.format(data[0][-1]), xy=(0.3, 0.5), xycoords=('axes fraction'))
