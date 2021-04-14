@@ -80,7 +80,7 @@ class SerialReceiver(QObject):
                 self.minuteDataFrame = pd.DataFrame(columns = ["RRData"])
                 if self.minuteCounter < 1200:
                     minuteDataFrame2 = pd.DataFrame([decoded_bytes], columns = ["RRData"])
-                    self.minuteDataFrame = self.minuteDataFrame.append(self.minuteDataFrame2)
+                    self.minuteDataFrame = self.minuteDataFrame.append(minuteDataFrame2)
                     print(self.minuteCounter, decoded_bytes)
                     self.minuteCounter = self.minuteCounter + 1
                 else: #this is when the minutecounter will equal to one minute of data gathered
