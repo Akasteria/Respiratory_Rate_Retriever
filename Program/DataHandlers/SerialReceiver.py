@@ -38,9 +38,9 @@ class SerialReceiver(QObject):
         self.RemoveFromList(list_input, '')
         for item in list_input:
             RRlist2.append(int(item))
-        floatingMean = statistics.mean(RRlist2)
-        integerMean = int(round(floatingMean))
-        print("rounded mean is... " + str(integerMean))
+        #floatingMean = statistics.mean(RRlist2)
+        #integerMean = int(round(floatingMean))
+        #print("rounded mean is... " + str(integerMean))
         vector = np.array(RRlist2)
         indexes, _ = scipy.signal.find_peaks(vector, height=60, distance=35)
         print('Peaks indexes: %s' % (indexes))
