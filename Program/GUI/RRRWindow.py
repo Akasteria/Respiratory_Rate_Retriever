@@ -4,7 +4,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from ..Tools import Pseudodata
 from .Widgets import CompositeWidgets
-from ..DataHandlers.SerialReciever import SerialReciever as Worker
+from ..DataHandlers.SerialReceiver import SerialReceiver as Worker
     
 class RRRWindow():
     def __init__(self, styleSheet):

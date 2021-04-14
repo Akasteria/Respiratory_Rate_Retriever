@@ -8,15 +8,17 @@ import vector
 import matplotlib.pyplot as plt
 from datetime import datetime as dt
 class SerialReceiver(QObject):
+    finished = pyqtSignal()
+    minuteReport = pyqtSignal(float)
     def __init__(self):
-        self.ser = serial.Serial(port = 'COM9', baudrate = 9600, timeout = 0.1)
+        QObject.__init__(self)
+        self.ser = serial.Serial(port = 'COM4', baudrate = 9600, timeout = 0.1)
         self.ser.flushInput()
         self.dataFrame = pd.DataFrame(columns = ['RRData', 'Time'])
+        self.minuteDataFrame = pd.DataFrame(columns = ["RRData"])
         self.minuteCounter = 0
         self.hourCounter = 0
         self.dayCounter = 0
-        self.finished = pyqtSignal()
-        self.minuteReport = pyqtSignal(float)
         #dataFrame = pd.DataFrame(columns = ['RRData'])
 
     #can we make the python dataFrame2 run and append to 15 seconds worth of data
@@ -57,10 +59,10 @@ class SerialReceiver(QObject):
         #print('Actual peak values: %s' % (peak_values))
         respiratoryRate = len(peak_values)
         #print('Respiratory Rate: ' + str(respiratoryRate))
-        self.minuteCounter.emit(respiratoryRate)
+        self.minuteCounter.emit(float(respiratoryRate))
         #print(RRlist2)
         
-    @pyqtSlot
+    @pyqtSlot()
     def GetSerial(self):
         while True:
             try:
@@ -75,10 +77,10 @@ class SerialReceiver(QObject):
 
                 #minute chart RR calculations
                 #20 serial reads per second, or 1200 per minute
-                minuteDataFrame = pd.DataFrame(columns = ["RRData"])
+                self.minuteDataFrame = pd.DataFrame(columns = ["RRData"])
                 if self.minuteCounter < 1200:
                     minuteDataFrame2 = pd.DataFrame([decoded_bytes], columns = ["RRData"])
-                    minuteDataFrame = minuteDataFrame.append(minuteDataFrame2)
+                    self.minuteDataFrame = self.minuteDataFrame.append(self.minuteDataFrame2)
                     print(self.minuteCounter, decoded_bytes)
                     self.minuteCounter = self.minuteCounter + 1
                 else: #this is when the minutecounter will equal to one minute of data gathered
@@ -87,9 +89,10 @@ class SerialReceiver(QObject):
                     # calculate the average, then how many times the sine wave crosses the avg
                     # then get the RR from that
                     # also reset the minuteCounter variable to 0
-                    RR_list = self.dataFrame["RRData"].tolist()
+                    RR_list = self.minuteDataFrame["RRData"].tolist()
                     self.Get_RR(RR_list)
                     self.minuteCounter = 0
+                    self.minuteDataFrame = pd.DataFrame(columns = ["RRData"])
                     
                 #print(decoded_bytes)
             except KeyboardInterrupt:
