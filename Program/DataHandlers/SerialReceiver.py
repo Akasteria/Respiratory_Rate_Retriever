@@ -78,7 +78,7 @@ class SerialReceiver(QObject):
                 #minute chart RR calculations
                 #20 serial reads per second, or 1200 per minute
                 self.minuteDataFrame = pd.DataFrame(columns = ["RRData"])
-                if self.minuteCounter < 1200:
+                if self.minuteCounter < 400:
                     minuteDataFrame2 = pd.DataFrame([decoded_bytes], columns = ["RRData"])
                     self.minuteDataFrame = self.minuteDataFrame.append(minuteDataFrame2)
                     print(self.minuteCounter, decoded_bytes)
