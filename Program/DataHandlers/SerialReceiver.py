@@ -59,7 +59,7 @@ class SerialReceiver(QObject):
         #print('Actual peak values: %s' % (peak_values))
         respiratoryRate = len(peak_values)
         #print('Respiratory Rate: ' + str(respiratoryRate))
-        self.minuteCounter.emit(float(respiratoryRate))
+        self.minuteReport.emit(float(respiratoryRate))
         #print(RRlist2)
         
     @pyqtSlot()
