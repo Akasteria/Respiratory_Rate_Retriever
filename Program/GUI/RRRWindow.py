@@ -4,7 +4,10 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from ..Tools import Pseudodata
 from .Widgets import CompositeWidgets
-from ..DataHandlers.SerialReceiver import SerialReceiver as Worker
+try:
+    from ..DataHandlers.SerialReceiver import SerialReceiver as Worker
+except:
+    from ..Testing.ThreadTester import Worker# TODO test and replace with serial Read
     
 class RRRWindow():
     def __init__(self, styleSheet):
