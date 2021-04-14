@@ -77,8 +77,8 @@ class SerialReceiver(QObject):
 
                 #minute chart RR calculations
                 #20 serial reads per second, or 1200 per minute
-                self.minuteDataFrame = pd.DataFrame(columns = ["RRData"])
-                if self.minuteCounter < 400:
+                #self.minuteDataFrame = pd.DataFrame(columns = ["RRData"])
+                if self.minuteCounter < 1100:
                     minuteDataFrame2 = pd.DataFrame([decoded_bytes], columns = ["RRData"])
                     self.minuteDataFrame = self.minuteDataFrame.append(minuteDataFrame2)
                     print(self.minuteCounter, decoded_bytes)
@@ -89,6 +89,7 @@ class SerialReceiver(QObject):
                     # calculate the average, then how many times the sine wave crosses the avg
                     # then get the RR from that
                     # also reset the minuteCounter variable to 0
+                    print(self.minuteDataFrame)
                     RR_list = self.minuteDataFrame["RRData"].tolist()
                     self.Get_RR(RR_list)
                     self.minuteCounter = 0
