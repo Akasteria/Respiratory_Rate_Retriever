@@ -5,10 +5,10 @@ from PyQt5.QtWidgets import *
 class BarChartLayout(QGroupBox):
     def __init__(self, data, title, xLabel):
         QGroupBox.__init__(self)
-        chart = BarChart()
-        chart.Plot(data, title, xLabel, 'Respiratory Rate')
+        self.chart = BarChart()
+        self.chart.Plot(data, title, xLabel, 'Respiratory Rate')
         layout = QHBoxLayout()
-        layout.addWidget(chart)
+        layout.addWidget(self.chart)
         self.setLayout(layout)
 class ChartValuePairList(QTabWidget):
     def __init__(self, hourlyData, dailyData, weeklyData):

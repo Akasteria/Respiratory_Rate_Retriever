@@ -1,3 +1,4 @@
+from PyQt5.QtCore import QThread, QObject, pyqtSignal, pyqtSlot
 import serial
 import statistics
 import pandas as pd
@@ -6,7 +7,7 @@ import scipy.signal
 import vector
 import matplotlib.pyplot as plt
 from datetime import datetime as dt
-class SerialReceiver:
+class SerialReceiver(QObject):
     def __init__(self):
         self.ser = serial.Serial(port = 'COM9', baudrate = 9600, timeout = 0.1)
         self.ser.flushInput()
@@ -14,6 +15,8 @@ class SerialReceiver:
         self.minuteCounter = 0
         self.hourCounter = 0
         self.dayCounter = 0
+        self.finished = pyqtSignal()
+        self.minuteReport = pyqtSignal(float)
         #dataFrame = pd.DataFrame(columns = ['RRData'])
 
     #can we make the python dataFrame2 run and append to 15 seconds worth of data
@@ -22,7 +25,7 @@ class SerialReceiver:
     def RemoveFromList(the_list, val):
         [value for value in the_list if value != val]
 
-    def Get_RR(self, list_input, window = None):
+    def Get_RR(self, list_input):
         #RRlist = []
         #for item in products_list:
             #RRlist.append(item)
@@ -54,10 +57,11 @@ class SerialReceiver:
         #print('Actual peak values: %s' % (peak_values))
         respiratoryRate = len(peak_values)
         #print('Respiratory Rate: ' + str(respiratoryRate))
-        if (window != None):
-            window.SetData(respiratoryRate)
+        self.minuteCounter.emit(respiratoryRate)
         #print(RRlist2)
-    def GetSerial(self, window = None):
+        
+    @pyqtSlot
+    def GetSerial(self):
         while True:
             try:
                 ser_bytes = self.ser.readline()
@@ -84,16 +88,16 @@ class SerialReceiver:
                     # then get the RR from that
                     # also reset the minuteCounter variable to 0
                     RR_list = self.dataFrame["RRData"].tolist()
-                    self.Get_RR(RR_list, window)
+                    self.Get_RR(RR_list)
                     self.minuteCounter = 0
                     
                 #print(decoded_bytes)
             except KeyboardInterrupt:
-                print("datalogging interrupted")
+                #print("datalogging interrupted")
                 pd.set_option("display.max_rows", None, "display.max_columns", None)
-                print(self.dataFrame)
+                #print(self.dataFrame)
                 break
-        
+        self.finished.emit()
 if __name__ == "__main__":
     sr = SerialReceiver()
     sr.GetSerial()
