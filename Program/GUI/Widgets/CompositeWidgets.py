@@ -14,7 +14,7 @@ class ChartValuePairList(QTabWidget):
     def __init__(self, hourlyData, dailyData, weeklyData):
         QTabWidget.__init__(self)
         self.setTabBar(TabBar(self))
-        dashBoard = BarThumbnail()
+        dashBoard = BarThumbnail(self.TabToHourly, self.TabToDaily, self.TabToWeekly)
         dashBoard.Plot(hourlyData, dailyData, weeklyData)
         web = InfoPage()
         w = QGroupBox()
@@ -31,6 +31,12 @@ class ChartValuePairList(QTabWidget):
         self.addTab(weeklyChart, "Weekly Log")
         self.setTabPosition(QTabWidget.West)
         self.setWindowTitle("RRR")
+    def TabToHourly(self):
+        self.setCurrentIndex(1)
+    def TabToDaily(self):
+        self.setCurrentIndex(2)
+    def TabToWeekly(self):
+        self.setCurrentIndex(3)
 
 class TabBar(QTabBar):
     def tabSizeHint(self, index):

@@ -1,6 +1,9 @@
 import sqlite3
 import hashlib
-from Encryption import Encryption
+import time
+import datetime
+import random
+from .Encryption import Encryption
 class Database:
     __payload = "Les fleurs blanches dans le vent dansent comme des papillons."
     payloadName = "Payload"
@@ -58,8 +61,11 @@ class Database:
         self.InsertIntoTable(tableName, *encryptedValues)
         
     def DropTable(self, tableName):
-        self.cursor.execute("DROP TABLE " + "'" + tableName + "'")
-        self.connection.commit()
+        try:
+            self.cursor.execute("DROP TABLE " + "'" + tableName + "'")
+            self.connection.commit()
+        except:
+            pass
     def EraseDatabase(self):
         self.DropTable(self.RRtableName)
         self.DropTable(self.payloadName)
@@ -117,13 +123,37 @@ class Database:
         for element in arr:
             plain.append(self.encryption.Decrypt(element))
         return tuple(plain)
+    def GeneratePseudodata(self):
+        self.EraseDatabase()
+        self.CreateDatabase()
+        t = datetime.datetime(time.gmtime()[0],time.gmtime()[1],time.gmtime()[2],time.gmtime()[3],time.gmtime()[4],time.gmtime()[5],time.gmtime()[6],None)
+        for i in range (60):
+            day = t - datetime.timedelta(days = i)
+            if (random.randint(0,100)>95):
+                print(str(day)+'missing')
+                continue
+            for h in range (10,18):
+                if (random.randint(0,100)>95):
+                    print(str(day)+'exercising')
+                    for m in range(60):
+                        self.SaveMinute(str(day.year), str(day.month),str(day.day),str(h),str(m),str(random.randint(30,33)),'0','1')
+                    continue
+                if (random.randint(0,100)>95):
+                    print(str(day)+'abnormal')
+                    for m in range(60):
+                        self.SaveMinute(str(day.year), str(day.month),str(day.day),str(h),str(m),str(random.randint(25,30)),'1','0')
+                    continue
+                for m in range(60):
+                    self.SaveMinute(str(day.year), str(day.month),str(day.day),str(h),str(m),str(random.randint(15,17)),'0','0')
+        
 if (__name__ == '__main__'):
     db = Database()
     db.LoadDB('test', 'pwd')
-    db.CreateDatabase()
-    for i in range(60):
-        db.SaveMinute('2021', '4', '1', '4', str(i), '20', '0', '0')
-    for i in range(60):
-        db.SaveMinute('2021', '4', '1', '5', str(i), '20', '0', '0')
-    print(db.ReadDay(2021,4,1))
-    db.EraseDatabase()
+    #db.CreateDatabase()
+    #db.GeneratePseudodata()
+    #for i in range(60):
+    #    db.SaveMinute('2021', '4', '1', '4', str(i), '20', '0', '0')
+    #for i in range(60):
+    #    db.SaveMinute('2021', '4', '1', '5', str(i), '20', '0', '0')
+    #print(db.ReadDay(2021,4,1))
+    #db.EraseDatabase()

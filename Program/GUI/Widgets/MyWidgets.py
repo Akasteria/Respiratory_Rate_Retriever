@@ -13,7 +13,48 @@ from matplotlib.gridspec import GridSpec
 import matplotlib.animation as animation
 import os
 import sys
-
+class UserLogin(QDialog):
+    def __init__(self):
+        QDialog.__init__(self)
+        self.setWindowModality(Qt.WindowModal)
+        self.setWindowTitle("Respirate")
+        self.register = False
+        self.label = QLabel()
+        self.label.setText("Name")
+        self.passLabel = QLabel()
+        self.passLabel.setText("Password")
+        self.boxLayout = QVBoxLayout()
+        self.nameText = QLineEdit()
+        self.passwordText = QLineEdit()
+        self.passwordText.setEchoMode(QLineEdit.Password)
+        self.acceptButton = QPushButton()
+        self.acceptButton.setText("Accept")
+        self.acceptButton.clicked.connect(self.accept)
+        self.acceptButton.clicked.connect(self.close)
+        self.createButton = QPushButton()
+        self.createButton.setText("New user")
+        self.createButton.clicked.connect(self.OnRegister)
+        self.createButton.clicked.connect(self.accept)
+        self.createButton.clicked.connect(self.close)
+        self.rejectButton = QPushButton()
+        self.rejectButton.setText("Cancel")
+        self.rejectButton.clicked.connect(self.reject)
+        self.boxLayout.addWidget(self.label)
+        self.boxLayout.addWidget(self.nameText)
+        self.boxLayout.addWidget(self.passLabel)
+        self.boxLayout.addWidget(self.passwordText)
+        self.boxLayout.addWidget(self.acceptButton)
+        self.boxLayout.addWidget(self.createButton)
+        self.boxLayout.addWidget(self.rejectButton)
+        self.setStyleSheet("color: white;")
+        self.acceptButton.setStyleSheet("border: 2px solid #C2C7CB; color: white;")
+        self.createButton.setStyleSheet("border: 2px solid #C2C7CB; color: white;")
+        self.rejectButton.setStyleSheet("border: 2px solid #C2C7CB; color: white;")
+        self.setLayout(self.boxLayout)
+    def OnAccept(self):
+        return self.nameText.text(), self.passwordText.text(), self.register
+    def OnRegister(self):
+        self.register = True
 class InfoPage(QLabel):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -166,13 +207,17 @@ class BarChart(FigureCanvasQTAgg):
 
 
 class BarThumbnail(FigureCanvasQTAgg):
-    def __init__(self):
+    def __init__(self, tabswitch1, tabswitch2, tabswitch3):
         pyplot.style.use(['dark_background'])
         matplotlib.use('Qt5Agg')
         self.fig = Figure()
         FigureCanvasQTAgg.__init__(self, self.fig)
+        self.tabswitch1 = tabswitch1
+        self.tabswitch2 = tabswitch2
+        self.tabswitch3 = tabswitch3
         self.fig.canvas.mpl_connect('axes_enter_event', self.OnEnterAxis)
         self.fig.canvas.mpl_connect('axes_leave_event', self.OnLeaveAxis)
+        self.fig.canvas.mpl_connect('button_press_event', self.OnClick)
         gs = GridSpec(6, 6, figure=self.fig)
         ax0 = self.fig.add_subplot(gs[0:3, 0:3])
         ax1 = self.fig.add_subplot(gs[0:3, 3:])
@@ -233,8 +278,14 @@ class BarThumbnail(FigureCanvasQTAgg):
     def OnLeaveAxis(self, event):
         event.inaxes.patch.set_edgecolor(None)
         event.canvas.draw()
-
-
+    def OnClick(self, event):
+        if (int(event.button) == 1):
+            if (event.inaxes==self.axes[2]):
+                self.tabswitch1()
+            if (event.inaxes==self.axes[3]):
+                self.tabswitch2()
+            if (event.inaxes==self.axes[4]):
+                self.tabswitch3()
 class ValuePanel(QWidget):
     def __init__(self, text, value, status):
         QWidget.__init__(self)
