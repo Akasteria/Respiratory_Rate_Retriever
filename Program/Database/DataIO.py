@@ -77,7 +77,7 @@ class Database:
         self.cursor.execute(self.selectFromTable.format(tableName = self.RRtableName, query = query))
         cur = self.cursor.fetchall()
         if (len(cur) == 0):
-            return tuple(0,0,0)
+            return []
         return [self.DecryptAll([cur[0][5], cur[0][6], cur[0][7]])]
     def ReadHour(self, year, month, day, hour):
         condArr = ['year = ' + self.EncryptAndEnclose(str(year)), 'month = '+ self.EncryptAndEnclose(str(month)), 'day = '+ self.EncryptAndEnclose(str(day)), 'hour = '+ self.EncryptAndEnclose(str(hour))]
