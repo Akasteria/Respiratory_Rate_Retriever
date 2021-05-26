@@ -21,7 +21,7 @@ class RRRWindow():
         mainw = QMainWindow()
         mainw.setCentralWidget(self.window)
         mainw.show()
-        mainw.setWindowTitle("Respiratory Rate Retriever")
+        mainw.setWindowTitle("Respirate")
         # Setup Serial Read Worker
         self.obj = Worker()
         self.thread = QThread()
