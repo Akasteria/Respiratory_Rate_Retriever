@@ -3,7 +3,14 @@ import hashlib
 import time
 import datetime
 import random
-from .Encryption import Encryption
+from typing import cast
+
+from matplotlib.pyplot import table
+try: 
+    from Encryption import Encryption
+except:
+    from .Encryption import Encryption
+
 class Database:
     __payload = "Les fleurs blanches dans le vent dansent comme des papillons."
     payloadName = "Payload"
@@ -26,6 +33,13 @@ class Database:
             #print('Incorrect password')
             #self.CreateDatabase()
             return False
+        self.cursor.execute("PRAGMA table_info(Payload)")
+        r = self.cursor.fetchone()
+        self.cursor.execute(self.selectFromTable.format(tableName = 'Payload', query = '"'+ r[1]+'" = '+ self.EncryptAndEnclose(r[1])))
+        r2 = self.cursor.fetchall()
+        if (len(r2) == 0 or r2[0][0] == 0):
+            return False
+        print(r2)
         return True
     def CreateDatabase(self):
         self.CreateTable(self.payloadName, self.__payload)
@@ -149,8 +163,8 @@ class Database:
 if (__name__ == '__main__'):
     db = Database()
     db.LoadDB('test', 'pwd')
-    #db.CreateDatabase()
-    #db.GeneratePseudodata()
+    db.CreateDatabase()
+    db.GeneratePseudodata()
     #for i in range(60):
     #    db.SaveMinute('2021', '4', '1', '4', str(i), '20', '0', '0')
     #for i in range(60):

@@ -62,62 +62,57 @@ class ChartValuePairList(QTabWidget):
         self.dailyData = [[],[]]
         for i in range (24):
             buffer = [[], []]
-            sCounter = [0,0,0,0]
             for j in range (60):
                 min = t - datetime.timedelta(hours=i, minutes=j)
                 data = self.database.ReadMinute(min.year, min.month , min.day, min.hour, min.minute)
                 d, s = self.DataTranslation(data)
-                sCounter[s] = sCounter[s]+1
-                if (d == 0):
-                    continue
                 buffer[0].append(d)
                 buffer[1].append(s)
-            if (sCounter[0] > 45):
-                self.dailyData[0].append(0)
-                self.dailyData[1].append(0)
-                continue
-            self.dailyData[0].append(sum(buffer[0])/len(buffer[0]))
-            sCounter[0] = 0
-            self.dailyData[1].append(sCounter.index(max(sCounter)))
+            avg = self.CalculateAverage(buffer, False)
+            self.dailyData[0].append(avg[0])
+            self.dailyData[1].append(avg[1])
     def GetWeeklyData(self,t):
         self.weeklyData = [[],[]]
         for i in range(7):
             dayBuffer = [[], []]
-            daySCounter = [0,0,0,0]
             for j in range (24):
                 buffer = [[], []]
-                sCounter = [0,0,0,0]
                 for k in range (60):
                     min = t - datetime.timedelta(days=i, hours=j, minutes=k)
                     data = self.database.ReadMinute(min.year, min.month , min.day, min.hour, min.minute)
                     d, s = self.DataTranslation(data)
-                    sCounter[s] = sCounter[s]+1
-                    if (d == 0):
-                        continue
                     buffer[0].append(d)
                     buffer[1].append(s)
-                if (sCounter[0] > 45):
-                    dayBuffer[0].append(0)
-                    dayBuffer[1].append(0)
-                    continue
-                dayBuffer[0].append(sum(buffer[0])/len(buffer[0]))
-                sCounter[0] = 0
-                daySCounter[sCounter.index(max(sCounter))] = daySCounter[sCounter.index(max(sCounter))] + 1
-            if (daySCounter[0] > 18):
-                self.weeklyData[0].append(0)
-                self.weeklyData[1].append(0)
-                continue 
-            self.weeklyData[0].append(sum(dayBuffer[0])/len(dayBuffer[0]))
-            daySCounter[0] = 0
-            self.weeklyData[1].append(daySCounter.index(max(daySCounter)))
+                avg = self.CalculateAverage(buffer, True)
+                dayBuffer[0].append(avg[0])
+                dayBuffer[1].append(avg[1])
+            dayAvg = self.CalculateAverage(dayBuffer, True)
+            self.weeklyData[0].append(dayAvg[0])
+            self.weeklyData[1].append(dayAvg[1])
     def DataTranslation(self, data):
         if (len(data) == 0):
             return 0, 0
-        if (data[0][-1] == 1):
+        if (int(data[0][-2]) == 1):
             return int(data[0][0]), 2
-        if (data[0][-2] == 1):
+        if (int(data[0][-1]) == 1):
             return int(data[0][0]), 3
         return int(data[0][0]), 1
+    def CalculateAverage(self, data, excludeExercise):
+        count = [[],[0,0,0,0]]
+        for i in range(len(data[0])): 
+            if excludeExercise and (data[1][i] == 0 or data[1][i] == 3):
+                continue
+            count[0].append(data[0][i])
+            count[1][data[1][i]] = count[1][data[1][i]] + 1
+        if (len(count[0]) == 0):
+            return [0,0]
+        avg = sum(count[0])/len(count[0])
+        stat = 1
+        if (count[1][2]>0):
+            stat = 2
+        if (count[1][3]>0):
+            stat = 3
+        return [avg, stat]
 class TabBar(QTabBar):
     def tabSizeHint(self, index):
         s = QTabBar.tabSizeHint(self, index)
