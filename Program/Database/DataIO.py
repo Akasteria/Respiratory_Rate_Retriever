@@ -39,7 +39,6 @@ class Database:
         r2 = self.cursor.fetchall()
         if (len(r2) == 0 or r2[0][0] == 0):
             return False
-        print(r2)
         return True
     def CreateDatabase(self):
         self.CreateTable(self.payloadName, self.__payload)
@@ -143,7 +142,7 @@ class Database:
         t = datetime.datetime(time.gmtime()[0],time.gmtime()[1],time.gmtime()[2],time.gmtime()[3],time.gmtime()[4],time.gmtime()[5],time.gmtime()[6],None)
         for i in range (60):
             day = t - datetime.timedelta(days = i)
-            if (random.randint(0,100)>95):
+            if (random.randint(0,100)>120):
                 print(str(day)+'missing')
                 continue
             for h in range (10,18):

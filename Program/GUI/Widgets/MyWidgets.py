@@ -16,6 +16,7 @@ import sys
 class UserLogin(QDialog):
     def __init__(self):
         QDialog.__init__(self)
+        self.setMinimumWidth(500)
         self.setWindowModality(Qt.WindowModal)
         self.setWindowTitle("Respirate")
         self.register = False
@@ -129,7 +130,8 @@ class BarChart(FigureCanvasQTAgg):
         self.axB.spines['left'].set_bounds((0, yMax))
         self.axB.spines['bottom'].set_bounds((xMin, 0))
         self.axB.set_xlim(left=xMin, right=0)
-        self.axB.set_ylim(bottom=0, top=yMax)
+        if (not yMax == 0):
+            self.axB.set_ylim(bottom=0, top=yMax)
 
         # Color bars
         myInt = 0
